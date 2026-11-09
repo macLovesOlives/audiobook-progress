@@ -83,14 +83,14 @@ function update(){
  const total=number('totalHours')*60+number('totalMinutes');
  const left=number('remainingHours')*60+number('remainingMinutes');
  const speed=Number(el('speed').value)||1;
- const pct=total>0?Math.min(100,Math.max(0,(1-left/total)*100)):0;
- const completed=Math.max(0,total-left);
+ const pct=total>0?Math.min(100,Math.max(0,(1-(left*speed)/total)*100)):0;
+ const completed=Math.max(0,total-(left*speed));
  el('speedValue').textContent=speed.toFixed(2)+'×';
  el('percentage').textContent=pct.toFixed(1)+'%';
  el('bar').style.width=pct+'%';
  el('completed').textContent='Completed: '+duration(completed);
- el('bookLeft').textContent='Book left: '+duration(left);
- el('listeningLeft').textContent=duration(left/speed);
+ el('bookLeft').textContent='Book left: '+duration(left*speed);
+ el('listeningLeft').textContent=duration(left);
  const state={};ids.forEach(id=>state[id]=el(id).value);
  try{localStorage.setItem('audiobook-progress-state',JSON.stringify(state));}catch(e){}
 }
