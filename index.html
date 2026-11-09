@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Book Progress">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Audiobook Progress</title>
+<style>
+:root{color-scheme:light;--ink:#282821;--muted:#77766e;--paper:#f7f4ef;--card:#fffefa;--line:#e8e3da;--green:#348263;--soft:#e9f1eb}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:480px;margin:0 auto;padding:26px 18px calc(34px + env(safe-area-inset-bottom))}
+header{margin:8px 2px 24px}h1{font-size:29px;letter-spacing:-.8px;margin:0 0 6px}header p{margin:0;color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 2px 8px #312b1c08}
+.label{font-size:12px;letter-spacing:.08em;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:11px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+input{width:100%;font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 12px;min-width:0;outline:none}
+input:focus{border-color:var(--green);box-shadow:0 0 0 3px #34826320}
+input[type=number]{appearance:textfield}input::-webkit-inner-spin-button{appearance:none}
+.speedline{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 10px}.speed{font-size:30px;font-weight:750;letter-spacing:-1px}
+input[type=range]{padding:0;accent-color:var(--green);border:0;background:transparent}
+.rangeends{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:3px}
+.progress-card{background:var(--soft);border:0}
+.progress-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}.pct{font-size:35px;font-weight:800;letter-spacing:-1.5px;color:var(--green)}
+.track{height:13px;background:#d4dfd5;border-radius:99px;overflow:hidden}.fill{height:100%;width:0;background:var(--green);border-radius:99px;transition:width .2s}
+.split{display:flex;justify-content:space-between;gap:8px;margin-top:11px;color:#5e675f;font-size:13px}
+.estimate{margin-top:17px;padding-top:15px;border-top:1px solid #d4dfd5;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.estimate span{font-size:13px;color:#5e675f}.estimate strong{font-size:20px}
+.note{font-size:12px;line-height:1.5;color:var(--muted);margin:10px 2px 0}
+button{border:0;border-radius:12px;padding:13px 16px;font:600 14px inherit;background:#eee9e0;color:var(--ink);width:100%;margin-top:8px}
+button:active{transform:scale(.99)}.footer{text-align:center;color:var(--muted);font-size:11px;margin:22px 0 0}
+@media(prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>🎧 Audiobook progress</h1><p>A little tracker for your current listen.</p></header>
+
+<section class="card">
+  <div class="label">Book length · at 1× speed</div>
+  <div class="fields">
+    <div class="field"><label for="totalHours">Hours</label><input id="totalHours" type="number" min="0" step="1" inputmode="numeric" value="12"></div>
+    <div class="field"><label for="totalMinutes">Minutes</label><input id="totalMinutes" type="number" min="0" max="59" step="1" inputmode="numeric" value="30"></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="label">Playback speed</div>
+  <div class="speedline"><span>Listening at</span><strong class="speed" id="speedValue">1.50×</strong></div>
+  <input id="speed" type="range" min=".5" max="3" step=".05" value="1.5" aria-label="Playback speed">
+  <div class="rangeends"><span>0.5×</span><span>3.0×</span></div>
+</section>
+
+<section class="card">
+  <div class="label">Book time remaining · at 1× speed</div>
+  <div class="fields">
+    <div class="field"><label for="remainingHours">Hours</label><input id="remainingHours" type="number" min="0" step="1" inputmode="numeric" value="4"></div>
+    <div class="field"><label for="remainingMinutes">Minutes</label><input id="remainingMinutes" type="number" min="0" max="59" step="1" inputmode="numeric" value="0"></div>
+  </div>
+  <p class="note">Enter the remaining portion of the book at normal (1×) speed. Changing playback speed updates your estimated listening time, not the book's length or percentage.</p>
+</section>
+
+<section class="card progress-card" aria-live="polite">
+  <div class="progress-top"><strong>Your progress</strong><strong class="pct" id="percentage">66.7%</strong></div>
+  <div class="track"><div class="fill" id="bar"></div></div>
+  <div class="split"><span id="completed">Completed: 8h 30m</span><span id="bookLeft">Book left: 4h 0m</span></div>
+  <div class="estimate"><span>Actual listening time left<br><small>at your selected speed</small></span><strong id="listeningLeft">2h 40m</strong></div>
+</section>
+
+<button id="reset" type="button">Reset example values</button>
+<p class="footer">Your values are saved automatically on this device.</p>
+</main>
+<script>
+const ids=['totalHours','totalMinutes','remainingHours','remainingMinutes','speed'];
+const el=id=>document.getElementById(id);
+const number=id=>Math.max(0,Number(el(id).value)||0);
+function duration(mins){mins=Math.max(0,Math.round(mins));const h=Math.floor(mins/60),m=mins%60;return `${h}h ${m}m`;}
+function update(){
+ const total=number('totalHours')*60+number('totalMinutes');
+ const left=number('remainingHours')*60+number('remainingMinutes');
+ const speed=Number(el('speed').value)||1;
+ const pct=total>0?Math.min(100,Math.max(0,(1-left/total)*100)):0;
+ const completed=Math.max(0,total-left);
+ el('speedValue').textContent=speed.toFixed(2)+'×';
+ el('percentage').textContent=pct.toFixed(1)+'%';
+ el('bar').style.width=pct+'%';
+ el('completed').textContent='Completed: '+duration(completed);
+ el('bookLeft').textContent='Book left: '+duration(left);
+ el('listeningLeft').textContent=duration(left/speed);
+ const state={};ids.forEach(id=>state[id]=el(id).value);
+ try{localStorage.setItem('audiobook-progress-state',JSON.stringify(state));}catch(e){}
+}
+ids.forEach(id=>el(id).addEventListener('input',update));
+try{const saved=JSON.parse(localStorage.getItem('audiobook-progress-state')||'null');if(saved)ids.forEach(id=>{if(saved[id]!==undefined)el(id).value=saved[id];});}catch(e){}
+el('reset').addEventListener('click',()=>{el('totalHours').value=12;el('totalMinutes').value=30;el('remainingHours').value=4;el('remainingMinutes').value=0;el('speed').value=1.5;update();});
+update();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
